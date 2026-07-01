@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Task Manager</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Dashboard</p>
+        <h1>Mes taches</h1>
+      </div>
+      <a class="link" href="/">Accueil</a>
+    </header>
+
+    <form id="task-form" class="task-form">
+      <input id="title" type="text" placeholder="Titre de la tache" required>
+      <input id="description" type="text" placeholder="Description">
+      <button type="submit">Ajouter</button>
+    </form>
+
+    <p id="message" class="message"></p>
+    <section id="task-list" class="task-list"></section>
+  </main>
+  <script src="../js/app.js"></script>
+</body>
+</html>
