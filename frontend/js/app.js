@@ -1,20 +1,35 @@
 ﻿const API_URL = "/api/tasks";
 const token = localStorage.getItem("token");
 const user = JSON.parse(localStorage.getItem("user") || "null");
+let editingTaskId = null;
+let currentTasks = [];
 
 if (!token) {
   window.location.href = "/login";
 }
 
+const searchInput = document.querySelector("#search");
+const statusFilter = document.querySelector("#status-filter");
+const priorityFilter = document.querySelector("#priority-filter");
 const form = document.querySelector("#task-form");
 const titleInput = document.querySelector("#title");
 const descriptionInput = document.querySelector("#description");
+const priorityInput = document.querySelector("#priority");
+const deadlineInput = document.querySelector("#deadline");
+const submitButton = document.querySelector("#submit-button");
+const cancelEditButton = document.querySelector("#cancel-edit");
 const taskList = document.querySelector("#task-list");
 const message = document.querySelector("#message");
 const userName = document.querySelector("#user-name");
 const logoutButton = document.querySelector("#logout-button");
-const priorityInput = document.querySelector("#priority");
-const deadlineInput = document.querySelector("#deadline");
+
+const statElements = {
+  total: document.querySelector("#stat-total"),
+  completed: document.querySelector("#stat-completed"),
+  pending: document.querySelector("#stat-pending"),
+  overdue: document.querySelector("#stat-overdue"),
+};
+
 if (userName && user) {
   userName.textContent = user.name;
 }
@@ -61,6 +76,35 @@ const request = async (url, options = {}) => {
   return response.json();
 };
 
+const formatDate = (value) => {
+  if (!value) return "Aucune";
+  return new Date(value).toLocaleDateString("fr-FR");
+};
+
+const normalizeDateInput = (value) => {
+  if (!value) return "";
+  return String(value).slice(0, 10);
+};
+
+const priorityLabel = (priority) => {
+  const labels = { low: "Basse", medium: "Moyenne", high: "Haute" };
+  return labels[priority] || "Moyenne";
+};
+
+const resetForm = () => {
+  editingTaskId = null;
+  form.reset();
+  priorityInput.value = "medium";
+  submitButton.textContent = "Ajouter";
+  cancelEditButton.classList.add("hidden");
+};
+
+const updateStats = (stats) => {
+  Object.entries(statElements).forEach(([key, element]) => {
+    if (element) element.textContent = stats[key] || 0;
+  });
+};
+
 const createTaskContent = (task) => {
   const content = document.createElement("div");
   content.className = "task-content";
@@ -69,11 +113,11 @@ const createTaskContent = (task) => {
   title.textContent = task.title;
 
   const description = document.createElement("p");
-description.textContent = task.description || "Sans description";
+  description.textContent = task.description || "Sans description";
 
   const meta = document.createElement("p");
   meta.className = "task-meta";
-  meta.textContent = `Priorite: ${task.priority || "medium"} | Deadline: ${task.deadline || "Aucune"}`;
+  meta.textContent = `Priorite: ${priorityLabel(task.priority)} | Date limite: ${formatDate(task.deadline)}`;
 
   content.append(title, description, meta);
   return content;
@@ -85,14 +129,14 @@ const renderTasks = (tasks) => {
   if (tasks.length === 0) {
     const empty = document.createElement("p");
     empty.className = "empty";
-    empty.textContent = "Aucune tache pour le moment.";
+    empty.textContent = "Aucune tache ne correspond aux criteres.";
     taskList.append(empty);
     return;
   }
 
   tasks.forEach((task) => {
     const item = document.createElement("article");
-    item.className = `task-item ${task.completed ? "done" : ""}`;
+    item.className = `task-item priority-${task.priority} ${task.completed ? "done" : ""}`.trim();
 
     const actions = document.createElement("div");
     actions.className = "task-actions";
@@ -103,9 +147,23 @@ const renderTasks = (tasks) => {
     toggle.addEventListener("click", async () => {
       await request(`${API_URL}/${task.id}`, {
         method: "PUT",
-        body: JSON.stringify({ ...task, completed: !task.completed }),
+        body: JSON.stringify({ ...task, completed: !task.completed, deadline: normalizeDateInput(task.deadline) || null }),
       });
-      await loadTasks();
+      await refreshDashboard();
+    });
+
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.textContent = "Modifier";
+    edit.addEventListener("click", () => {
+      editingTaskId = task.id;
+      titleInput.value = task.title;
+      descriptionInput.value = task.description || "";
+      priorityInput.value = task.priority || "medium";
+      deadlineInput.value = normalizeDateInput(task.deadline);
+      submitButton.textContent = "Enregistrer";
+      cancelEditButton.classList.remove("hidden");
+      titleInput.focus();
     });
 
     const remove = document.createElement("button");
@@ -114,21 +172,42 @@ const renderTasks = (tasks) => {
     remove.textContent = "Supprimer";
     remove.addEventListener("click", async () => {
       await request(`${API_URL}/${task.id}`, { method: "DELETE" });
-      await loadTasks();
+      if (editingTaskId === task.id) resetForm();
+      await refreshDashboard();
     });
 
-    actions.append(toggle, remove);
+    actions.append(toggle, edit, remove);
     item.append(createTaskContent(task), actions);
     taskList.append(item);
   });
 };
 
+const buildTaskQuery = () => {
+  const params = new URLSearchParams();
+
+  if (searchInput.value.trim()) params.append("search", searchInput.value.trim());
+  if (statusFilter.value) params.append("status", statusFilter.value);
+  if (priorityFilter.value) params.append("priority", priorityFilter.value);
+
+  const query = params.toString();
+  return query ? `${API_URL}?${query}` : API_URL;
+};
+
 const loadTasks = async () => {
+  currentTasks = await request(buildTaskQuery());
+  if (!currentTasks) return;
+  renderTasks(currentTasks);
+};
+
+const loadStats = async () => {
+  const stats = await request(`${API_URL}/stats`);
+  if (stats) updateStats(stats);
+};
+
+const refreshDashboard = async () => {
   try {
     setMessage("Chargement...");
-    const tasks = await request(API_URL);
-    if (!tasks) return;
-    renderTasks(tasks);
+    await Promise.all([loadTasks(), loadStats()]);
     setMessage("");
   } catch (error) {
     setMessage(error.message, "error");
@@ -138,22 +217,39 @@ const loadTasks = async () => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  try {
-    await request(API_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        title: titleInput.value,
-        description: descriptionInput.value,
-        priority: priorityInput.value,
-        deadline: deadlineInput.value || null,
-      }),
-    });
+  const payload = {
+    title: titleInput.value,
+    description: descriptionInput.value,
+    priority: priorityInput.value,
+    deadline: deadlineInput.value || null,
+  };
 
-    form.reset();
-    await loadTasks();
+  try {
+    if (editingTaskId) {
+      const original = currentTasks.find((task) => task.id === editingTaskId);
+      await request(`${API_URL}/${editingTaskId}`, {
+        method: "PUT",
+        body: JSON.stringify({ ...payload, completed: Boolean(original && original.completed) }),
+      });
+      setMessage("Tache modifiee avec succes.", "success");
+    } else {
+      await request(API_URL, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      setMessage("Tache ajoutee avec succes.", "success");
+    }
+
+    resetForm();
+    await refreshDashboard();
   } catch (error) {
     setMessage(error.message, "error");
   }
 });
 
-loadTasks();
+cancelEditButton.addEventListener("click", resetForm);
+searchInput.addEventListener("input", refreshDashboard);
+statusFilter.addEventListener("change", refreshDashboard);
+priorityFilter.addEventListener("change", refreshDashboard);
+
+refreshDashboard();

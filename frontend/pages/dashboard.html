@@ -17,21 +17,57 @@
       <button id="logout-button" type="button" class="link">Deconnexion</button>
     </header>
 
-  <form id="task-form" class="task-form">
-    <input id="title" type="text" placeholder="Titre de la tache" required>
-    <input id="description" type="text" placeholder="Description">
+    <section class="stats-grid" aria-label="Statistiques des taches">
+      <article class="stat-card">
+        <span>Total</span>
+        <strong id="stat-total">0</strong>
+      </article>
+      <article class="stat-card">
+        <span>Terminees</span>
+        <strong id="stat-completed">0</strong>
+      </article>
+      <article class="stat-card">
+        <span>En cours</span>
+        <strong id="stat-pending">0</strong>
+      </article>
+      <article class="stat-card warning">
+        <span>En retard</span>
+        <strong id="stat-overdue">0</strong>
+      </article>
+    </section>
 
-    
-    <select id="priority" aria-label="Priorité">
-      <option value="low">Priorite basse</option>
-      <option value="medium" selected>Priorite moyenne</option>
-      <option value="high">Priorite haute</option>
-    </select>
+    <div class="filters">
+      <input id="search" type="text" placeholder="Rechercher une tache">
 
-    <input id="deadline" type="date" aria-label="Deadline">
+      <select id="status-filter" aria-label="Filtrer par statut">
+        <option value="">Toutes</option>
+        <option value="completed">Terminees</option>
+        <option value="pending">Non terminees</option>
+      </select>
 
-    <button type="submit">Ajouter</button>
-  </form>
+      <select id="priority-filter" aria-label="Filtrer par priorite">
+        <option value="">Toutes les priorites</option>
+        <option value="low">Basse</option>
+        <option value="medium">Moyenne</option>
+        <option value="high">Haute</option>
+      </select>
+    </div>
+
+    <form id="task-form" class="task-form">
+      <input id="title" type="text" placeholder="Titre de la tache" required>
+      <input id="description" type="text" placeholder="Description">
+
+      <select id="priority" aria-label="Priorite">
+        <option value="low">Priorite basse</option>
+        <option value="medium" selected>Priorite moyenne</option>
+        <option value="high">Priorite haute</option>
+      </select>
+
+      <input id="deadline" type="date" aria-label="Date limite">
+
+      <button id="submit-button" type="submit">Ajouter</button>
+      <button id="cancel-edit" type="button" class="secondary hidden">Annuler</button>
+    </form>
 
     <p id="message" class="message"></p>
     <section id="task-list" class="task-list"></section>

@@ -1,7 +1,17 @@
 ﻿const Task = require("../models/taskModel");
 
+const normalizePriority = (priority) => {
+  return ["low", "medium", "high"].includes(priority) ? priority : "medium";
+};
+
 const getTasks = (req, res) => {
-  Task.getAllTasks(req.user.id, (err, results) => {
+  const filters = {
+    search: (req.query.search || "").trim(),
+    status: req.query.status || "",
+    priority: req.query.priority || "",
+  };
+
+  Task.getAllTasks(req.user.id, filters, (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -18,11 +28,11 @@ const createTask = (req, res) => {
   }
 
   const task = {
-  userId: req.user.id,
-  title: title.trim(),
-  description: description.trim(),
-  priority,
-  deadline,
+    userId: req.user.id,
+    title: title.trim(),
+    description: description.trim(),
+    priority: normalizePriority(priority),
+    deadline: deadline || null,
   };
 
   Task.createTask(task, (err, result) => {
@@ -44,7 +54,7 @@ const createTask = (req, res) => {
 
 const updateTask = (req, res) => {
   const { id } = req.params;
-  const { title, description = "", completed = false } = req.body;
+  const { title, description = "", completed = false, priority = "medium", deadline = null } = req.body;
 
   if (!title || !title.trim()) {
     return res.status(400).json({ error: "Le titre est obligatoire" });
@@ -55,6 +65,8 @@ const updateTask = (req, res) => {
     title: title.trim(),
     description: description.trim(),
     completed,
+    priority: normalizePriority(priority),
+    deadline: deadline || null,
   };
 
   Task.updateTask(id, task, (err, result) => {
@@ -72,6 +84,8 @@ const updateTask = (req, res) => {
       title: task.title,
       description: task.description,
       completed: Boolean(completed),
+      priority: task.priority,
+      deadline: task.deadline,
     });
   });
 };
@@ -90,4 +104,22 @@ const deleteTask = (req, res) => {
   });
 };
 
-module.exports = { getTasks, createTask, updateTask, deleteTask };
+const getStats = (req, res) => {
+  Task.getStats(req.user.id, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    const stats = results[0] || {};
+    res.json({
+      total: Number(stats.total || 0),
+      completed: Number(stats.completed || 0),
+      pending: Number(stats.pending || 0),
+      highPriority: Number(stats.highPriority || 0),
+      overdue: Number(stats.overdue || 0),
+      dueToday: Number(stats.dueToday || 0),
+    });
+  });
+};
+
+module.exports = { getTasks, createTask, updateTask, deleteTask, getStats };
