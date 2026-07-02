@@ -1,7 +1,7 @@
 ﻿const Task = require("../models/taskModel");
 
 const getTasks = (req, res) => {
-  Task.getAllTasks((err, results) => {
+  Task.getAllTasks(req.user.id, (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -17,12 +17,24 @@ const createTask = (req, res) => {
     return res.status(400).json({ error: "Le titre est obligatoire" });
   }
 
-  Task.createTask({ title: title.trim(), description: description.trim() }, (err, result) => {
+  const task = {
+    userId: req.user.id,
+    title: title.trim(),
+    description: description.trim(),
+  };
+
+  Task.createTask(task, (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
 
-    res.status(201).json({ id: result.insertId, title: title.trim(), description: description.trim(), completed: false });
+    res.status(201).json({
+      id: result.insertId,
+      user_id: req.user.id,
+      title: task.title,
+      description: task.description,
+      completed: false,
+    });
   });
 };
 
@@ -34,7 +46,14 @@ const updateTask = (req, res) => {
     return res.status(400).json({ error: "Le titre est obligatoire" });
   }
 
-  Task.updateTask(id, { title: title.trim(), description: description.trim(), completed }, (err, result) => {
+  const task = {
+    userId: req.user.id,
+    title: title.trim(),
+    description: description.trim(),
+    completed,
+  };
+
+  Task.updateTask(id, task, (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -43,12 +62,18 @@ const updateTask = (req, res) => {
       return res.status(404).json({ error: "Tache introuvable" });
     }
 
-    res.json({ id: Number(id), title: title.trim(), description: description.trim(), completed: Boolean(completed) });
+    res.json({
+      id: Number(id),
+      user_id: req.user.id,
+      title: task.title,
+      description: task.description,
+      completed: Boolean(completed),
+    });
   });
 };
 
 const deleteTask = (req, res) => {
-  Task.deleteTask(req.params.id, (err, result) => {
+  Task.deleteTask(req.params.id, req.user.id, (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }

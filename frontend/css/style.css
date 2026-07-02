@@ -113,7 +113,8 @@ button.danger {
   margin-bottom: 16px;
 }
 
-input {
+input, 
+select{
   min-height: 42px;
   padding: 0 12px;
   border: 1px solid #cfd7e3;
@@ -174,4 +175,41 @@ input {
   h1 {
     font-size: 30px;
   }
+}
+
+.auth-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.auth-form label {
+  font-weight: 700;
+}
+
+.auth-form button {
+  margin-top: 8px;
+}
+
+a {
+  color: #2f6f62;
+  font-weight: 700;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.button.secondary {
+  background: #202124;
+}
+
+.task-meta {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #3f6f5f;
+  font-weight: 700;
 }

@@ -1,10 +1,31 @@
 ﻿const API_URL = "/api/tasks";
+const token = localStorage.getItem("token");
+const user = JSON.parse(localStorage.getItem("user") || "null");
+
+if (!token) {
+  window.location.href = "/login";
+}
 
 const form = document.querySelector("#task-form");
 const titleInput = document.querySelector("#title");
 const descriptionInput = document.querySelector("#description");
 const taskList = document.querySelector("#task-list");
 const message = document.querySelector("#message");
+const userName = document.querySelector("#user-name");
+const logoutButton = document.querySelector("#logout-button");
+const priorityInput = document.querySelector("#priority");
+const deadlineInput = document.querySelector("#deadline");
+if (userName && user) {
+  userName.textContent = user.name;
+}
+
+if (logoutButton) {
+  logoutButton.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  });
+}
 
 const setMessage = (text, type = "") => {
   message.textContent = text;
@@ -13,9 +34,20 @@ const setMessage = (text, type = "") => {
 
 const request = async (url, options = {}) => {
   const response = await fetch(url, {
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(options.headers || {}),
+    },
     ...options,
   });
+
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+    return null;
+  }
 
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
@@ -37,9 +69,13 @@ const createTaskContent = (task) => {
   title.textContent = task.title;
 
   const description = document.createElement("p");
-  description.textContent = task.description || "Sans description";
+description.textContent = task.description || "Sans description";
 
-  content.append(title, description);
+  const meta = document.createElement("p");
+  meta.className = "task-meta";
+  meta.textContent = `Priorite: ${task.priority || "medium"} | Deadline: ${task.deadline || "Aucune"}`;
+
+  content.append(title, description, meta);
   return content;
 };
 
@@ -91,6 +127,7 @@ const loadTasks = async () => {
   try {
     setMessage("Chargement...");
     const tasks = await request(API_URL);
+    if (!tasks) return;
     renderTasks(tasks);
     setMessage("");
   } catch (error) {
@@ -104,7 +141,12 @@ form.addEventListener("submit", async (event) => {
   try {
     await request(API_URL, {
       method: "POST",
-      body: JSON.stringify({ title: titleInput.value, description: descriptionInput.value }),
+      body: JSON.stringify({
+        title: titleInput.value,
+        description: descriptionInput.value,
+        priority: priorityInput.value,
+        deadline: deadlineInput.value || null,
+      }),
     });
 
     form.reset();

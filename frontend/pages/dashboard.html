@@ -12,15 +12,26 @@
       <div>
         <p class="eyebrow">Dashboard</p>
         <h1>Mes taches</h1>
+        <p class="muted">Connecte: <span id="user-name"></span></p>
       </div>
-      <a class="link" href="/">Accueil</a>
+      <button id="logout-button" type="button" class="link">Deconnexion</button>
     </header>
 
-    <form id="task-form" class="task-form">
-      <input id="title" type="text" placeholder="Titre de la tache" required>
-      <input id="description" type="text" placeholder="Description">
-      <button type="submit">Ajouter</button>
-    </form>
+  <form id="task-form" class="task-form">
+    <input id="title" type="text" placeholder="Titre de la tache" required>
+    <input id="description" type="text" placeholder="Description">
+
+    
+    <select id="priority" aria-label="Priorité">
+      <option value="low">Priorite basse</option>
+      <option value="medium" selected>Priorite moyenne</option>
+      <option value="high">Priorite haute</option>
+    </select>
+
+    <input id="deadline" type="date" aria-label="Deadline">
+
+    <button type="submit">Ajouter</button>
+  </form>
 
     <p id="message" class="message"></p>
     <section id="task-list" class="task-list"></section>

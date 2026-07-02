@@ -9,10 +9,21 @@
 <body>
   <main class="home">
     <section class="panel">
+      <p class="eyebrow">Task Manager</p>
       <h1>Connexion</h1>
-      <p class="muted">La gestion des utilisateurs n est pas encore implementee dans le backend.</p>
-      <a class="button" href="/dashboard">Continuer vers les taches</a>
+      <form id="login-form" class="auth-form">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="exemple@email.com" required>
+
+        <label for="password">Mot de passe</label>
+        <input id="password" name="password" type="password" placeholder="Votre mot de passe" required>
+
+        <button type="submit">Se connecter</button>
+      </form>
+      <p id="message" class="message"></p>
+      <p class="muted">Pas encore de compte ? <a href="/register">Creer un compte</a></p>
     </section>
   </main>
+  <script src="../js/auth.js"></script>
 </body>
 </html>

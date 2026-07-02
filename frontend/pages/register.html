@@ -9,10 +9,24 @@
 <body>
   <main class="home">
     <section class="panel">
-      <h1>Inscription</h1>
-      <p class="muted">La creation de comptes n est pas encore implementee dans le backend.</p>
-      <a class="button" href="/dashboard">Continuer vers les taches</a>
+      <p class="eyebrow">Task Manager</p>
+      <h1>Creer un compte</h1>
+      <form id="register-form" class="auth-form">
+        <label for="name">Nom</label>
+        <input id="name" name="name" type="text" placeholder="Votre nom" required>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="exemple@email.com" required>
+
+        <label for="password">Mot de passe</label>
+        <input id="password" name="password" type="password" placeholder="Minimum 6 caracteres" required minlength="6">
+
+        <button type="submit">S'inscrire</button>
+      </form>
+      <p id="message" class="message"></p>
+      <p class="muted">Deja un compte ? <a href="/login">Se connecter</a></p>
     </section>
   </main>
+  <script src="../js/auth.js"></script>
 </body>
 </html>

@@ -6,6 +6,7 @@ const cors = require("cors");
 
 const db = require("./config/db");
 const taskRoutes = require("./routes/taskRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 const frontendPath = path.join(__dirname, "..", "frontend");
@@ -30,6 +31,15 @@ app.get("/dashboard", (req, res) => {
   res.sendFile(path.join(frontendPath, "pages", "dashboard.html"));
 });
 
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(frontendPath, "pages", "login.html"));
+});
+
+app.get("/register", (req, res) => {
+  res.sendFile(path.join(frontendPath, "pages", "register.html"));
+});
+
+app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
 const PORT = process.env.PORT || 5000;
