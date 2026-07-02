@@ -11,16 +11,18 @@ const getTasks = (req, res) => {
 };
 
 const createTask = (req, res) => {
-  const { title, description = "" } = req.body;
+  const { title, description = "", priority = "medium", deadline = null } = req.body;
 
   if (!title || !title.trim()) {
     return res.status(400).json({ error: "Le titre est obligatoire" });
   }
 
   const task = {
-    userId: req.user.id,
-    title: title.trim(),
-    description: description.trim(),
+  userId: req.user.id,
+  title: title.trim(),
+  description: description.trim(),
+  priority,
+  deadline,
   };
 
   Task.createTask(task, (err, result) => {
@@ -33,6 +35,8 @@ const createTask = (req, res) => {
       user_id: req.user.id,
       title: task.title,
       description: task.description,
+      priority: task.priority,
+      deadline: task.deadline,
       completed: false,
     });
   });

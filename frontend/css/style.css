@@ -108,9 +108,10 @@ button.danger {
 
 .task-form {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 1.2fr 1.2fr 180px 170px auto;
   gap: 10px;
   margin-bottom: 16px;
+  align-items: center;
 }
 
 input, 
@@ -162,6 +163,7 @@ select{
 }
 
 @media (max-width: 720px) {
+
   .topbar,
   .task-item {
     align-items: stretch;
