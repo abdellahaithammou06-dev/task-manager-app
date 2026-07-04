@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistiques - Task Manager</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/theme.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Statistiques</p>
+        <h1>Courbes des taches</h1>
+        <p class="muted">Connecte: <span id="user-name"></span></p>
+      </div>
+      <nav class="top-actions" aria-label="Navigation principale">
+        <a class="button secondary" href="/dashboard">Taches</a>
+        <button id="theme-toggle" type="button" class="secondary">Mode sombre</button>
+        <button id="logout-button" type="button" class="link">Deconnexion</button>
+      </nav>
+    </header>
+
+    <section class="stats-grid" aria-label="Resume des statistiques">
+      <article class="stat-card">
+        <span>Total</span>
+        <strong id="stat-total">0</strong>
+      </article>
+      <article class="stat-card">
+        <span>Terminees</span>
+        <strong id="stat-completed">0</strong>
+      </article>
+      <article class="stat-card">
+        <span>En cours</span>
+        <strong id="stat-pending">0</strong>
+      </article>
+      <article class="stat-card warning">
+        <span>En retard</span>
+        <strong id="stat-overdue">0</strong>
+      </article>
+    </section>
+
+    <section class="charts-grid" aria-label="Graphiques des taches">
+      <article class="chart-panel">
+        <div class="chart-header">
+          <div>
+            <p class="eyebrow">Progression</p>
+            <h2>Taches terminees et en cours</h2>
+          </div>
+        </div>
+        <canvas id="status-chart" width="640" height="320" aria-label="Courbe des statuts"></canvas>
+      </article>
+
+      <article class="chart-panel">
+        <div class="chart-header">
+          <div>
+            <p class="eyebrow">Priorites</p>
+            <h2>Repartition par priorite</h2>
+          </div>
+        </div>
+        <canvas id="priority-chart" width="640" height="320" aria-label="Graphique des priorites"></canvas>
+      </article>
+
+      <article class="chart-panel wide">
+        <div class="chart-header">
+          <div>
+            <p class="eyebrow">Echeances</p>
+            <h2>Vue des deadlines</h2>
+          </div>
+        </div>
+        <canvas id="deadline-chart" width="1040" height="320" aria-label="Courbe des echeances"></canvas>
+      </article>
+    </section>
+
+    <p id="message" class="message"></p>
+  </main>
+  <script src="../js/stats.js"></script>
+</body>
+</html>
