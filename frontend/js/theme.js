@@ -12,7 +12,7 @@ const getSavedTheme = () => {
 
 const updateThemeButton = (button, theme) => {
   if (!button) return;
-  button.textContent = theme === "dark" ? "Mode clair" : "Mode sombre";
+  button.textContent = theme === "dark" ? "\u2600\ufe0f" : "\ud83c\udf19";
   button.setAttribute("aria-pressed", String(theme === "dark"));
 };
 

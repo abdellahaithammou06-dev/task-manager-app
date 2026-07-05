@@ -6,8 +6,6 @@ if (!token) {
   window.location.href = "/login";
 }
 
-const userName = document.querySelector("#user-name");
-const logoutButton = document.querySelector("#logout-button");
 const message = document.querySelector("#message");
 
 const statElements = {
@@ -19,17 +17,54 @@ const statElements = {
 
 let chartData = null;
 
-if (userName && user) {
-  userName.textContent = user.name;
+const initUserAvatar = (user) => {
+  const avatar = document.querySelector("#user-avatar");
+  const nameEl = document.querySelector("#avatar-name");
+  if (!avatar || !user) return;
+
+  const initials = user.name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("");
+
+  const palette = ["#28715c","#b53b3b","#3467b5","#c97f2c","#7b4fa2","#2d7d8a","#c0395a","#3a8c6a"];
+  const hash = user.name.split("").reduce((s, c) => s + c.charCodeAt(0), 0);
+  avatar.style.background = palette[hash % palette.length];
+  avatar.textContent = initials || "?";
+  if (nameEl) nameEl.textContent = user.name;
+};
+
+const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "/login";
+};
+
+if (user) {
+  initUserAvatar(user);
+  const userName = document.querySelector("#avatar-name");
+  if (userName) userName.textContent = user.name;
+  const dn = document.querySelector("#dropdown-name");
+  const de = document.querySelector("#dropdown-email");
+  if (dn) dn.textContent = user.name;
+  if (de) de.textContent = user.email;
 }
 
-if (logoutButton) {
-  logoutButton.addEventListener("click", () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
+const userBtn = document.querySelector("#user-btn");
+const dropdown = document.querySelector("#user-dropdown");
+
+if (userBtn && dropdown) {
+  userBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle("open");
   });
+  document.addEventListener("click", () => dropdown.classList.remove("open"), { passive: true });
 }
+
+const dl = document.querySelector("#dropdown-logout");
+if (dl) dl.addEventListener("click", logout);
 
 const setMessage = (text, type = "") => {
   message.textContent = text;
