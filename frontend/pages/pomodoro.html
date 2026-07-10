@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pomodoro - Task Manager</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/theme.js" defer></script>
+</head>
+<body>
+  <main class="shell pomo-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Pomodoro</p>
+        <h1>Minuteur de concentration</h1>
+      </div>
+      <nav class="top-actions" aria-label="Navigation principale">
+        <a class="button secondary" href="/dashboard">Taches</a>
+        <button id="theme-toggle" type="button" class="secondary">Mode sombre</button>
+        <div class="user-btn-wrap">
+          <div class="user-btn" id="user-btn" tabindex="0" role="button" aria-haspopup="true" aria-label="Menu utilisateur">
+            <span class="avatar" id="user-avatar">AA</span>
+            <span class="avatar-name" id="avatar-name"></span>
+          </div>
+          <div class="user-dropdown" id="user-dropdown" role="menu">
+            <div class="dropdown-header">
+              <span class="avatar-name" id="dropdown-name"></span>
+              <span class="dropdown-email" id="dropdown-email"></span>
+            </div>
+            <button class="dropdown-item danger" id="dropdown-logout" role="menuitem">Deconnexion</button>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="pomo-layout">
+      <div class="pomo-card">
+        <section class="pomo-task-info" id="pomo-task-info">
+          <div id="pomo-task-details">
+            <p class="eyebrow" id="pomo-task-eyebrow">Tache</p>
+            <h2 id="pomo-task-title">Aucune tache selectionnee</h2>
+            <p id="pomo-task-meta" class="task-meta"></p>
+          </div>
+          <div id="pomo-no-task" class="hidden">
+            <p class="eyebrow">Aucune tache</p>
+            <p class="muted">Selectionnez une tache depuis le tableau de bord.</p>
+            <a class="button secondary" href="/dashboard">Aller au tableau de bord</a>
+          </div>
+        </section>
+
+        <section class="pomo-timer-section">
+          <div class="pomo-rings">
+            <svg class="pomo-ring" viewBox="0 0 220 220">
+              <circle class="pomo-ring-bg" cx="110" cy="110" r="100"/>
+              <circle class="pomo-ring-progress" id="pomo-ring-progress" cx="110" cy="110" r="100"
+                      stroke-dasharray="628.32" stroke-dashoffset="0"/>
+            </svg>
+            <div class="pomo-time-display">
+              <span id="pomo-time">25:00</span>
+              <span class="pomo-phase" id="pomo-phase">Travail</span>
+            </div>
+          </div>
+
+          <div class="pomo-controls">
+            <button id="pomo-start" class="button">Demarrer</button>
+            <button id="pomo-pause" class="button secondary hidden">Pause</button>
+            <button id="pomo-reset" class="button secondary">Reinitialiser</button>
+          </div>
+
+          <div class="pomo-sessions" id="pomo-sessions">
+            <span class="pomo-session-count" id="pomo-session-count">Session 0</span>
+            <div class="pomo-dots" id="pomo-dots"></div>
+          </div>
+        </section>
+
+        <section class="pomo-settings">
+          <h3>Parametres</h3>
+          <div class="pomo-settings-grid">
+            <label>
+              Travail (min)
+              <input id="pomo-work-time" type="number" min="1" max="120" value="25">
+            </label>
+            <label>
+              Pause (min)
+              <input id="pomo-break-time" type="number" min="1" max="60" value="5">
+            </label>
+          </div>
+          <button id="pomo-complete" class="button danger hidden" type="button">Marquer terminee</button>
+          <p id="pomo-message" class="message"></p>
+        </section>
+      </div>
+    </div>
+  </main>
+  <script src="../js/pomodoro.js"></script>
+</body>
+</html>

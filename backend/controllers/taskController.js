@@ -122,4 +122,12 @@ const getStats = (req, res) => {
   });
 };
 
-module.exports = { getTasks, createTask, updateTask, deleteTask, getStats };
+const getTask = (req, res) => {
+  Task.getTaskById(req.params.id, req.user.id, (err, task) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!task) return res.status(404).json({ error: "Tache introuvable" });
+    res.json(task);
+  });
+};
+
+module.exports = { getTasks, createTask, updateTask, deleteTask, getStats, getTask };

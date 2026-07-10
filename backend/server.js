@@ -35,6 +35,10 @@ app.get("/stats", (req, res) => {
   res.sendFile(path.join(frontendPath, "pages", "stats.html"));
 });
 
+app.get("/pomodoro", (req, res) => {
+  res.sendFile(path.join(frontendPath, "pages", "pomodoro.html"));
+});
+
 app.get("/login", (req, res) => {
   res.sendFile(path.join(frontendPath, "pages", "login.html"));
 });

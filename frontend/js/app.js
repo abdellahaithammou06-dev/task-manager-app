@@ -175,6 +175,11 @@ const renderTasks = (tasks) => {
     const actions = document.createElement("div");
     actions.className = "task-actions";
 
+    const pomo = document.createElement("a");
+    pomo.className = "button secondary pomo-btn";
+    pomo.href = `/pomodoro?id=${task.id}`;
+    pomo.textContent = "\u23f1";
+
     const toggle = document.createElement("button");
     toggle.type = "button";
     toggle.textContent = task.completed ? "Reouvrir" : "Terminer";
@@ -210,7 +215,7 @@ const renderTasks = (tasks) => {
       await refreshDashboard();
     });
 
-    actions.append(toggle, edit, remove);
+    actions.append(pomo, toggle, edit, remove);
     item.append(createTaskContent(task), actions);
     taskList.append(item);
   });
@@ -223,7 +228,7 @@ const buildTaskQuery = () => {
   if (statusFilter.value) params.append("status", statusFilter.value);
   if (priorityFilter.value) params.append("priority", priorityFilter.value);
 
-  const query = params.toString();
+  const query = params.toString(); 
   return query ? `${API_URL}?${query}` : API_URL;
 };
 

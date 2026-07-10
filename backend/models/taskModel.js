@@ -93,4 +93,19 @@ const getStats = (userId, callback) => {
   );
 };
 
-module.exports = { getAllTasks, createTask, updateTask, deleteTask, getStats };
+const getTaskById = (id, userId, callback) => {
+  db.query(
+    `SELECT
+       id, user_id, title, description, completed,
+       LOWER(priority) AS priority, deadline, created_at
+     FROM tasks
+     WHERE id = ? AND user_id = ?`,
+    [id, userId],
+    (err, results) => {
+      if (err) return callback(err);
+      callback(null, results[0] || null);
+    }
+  );
+};
+
+module.exports = { getAllTasks, createTask, updateTask, deleteTask, getStats, getTaskById };
